@@ -6,7 +6,6 @@ $monaco_version = "0.20.0"
 
 # ------------------------
 $monaco_tgz_url = "https://registry.npmjs.org/monaco-editor/-/monaco-editor-$monaco_version.tgz"
-$sharp_zip_lib_url = "https://github.com/icsharpcode/SharpZipLib/releases/download/0.86.0.518/ICSharpCode.SharpZipLib.dll"
 $temp_dir_name = ".temp"
 
 function Get-ScriptDirectory {
@@ -20,27 +19,51 @@ Push-Location $script_dir
 function Extract-TGZ {
     Param([string]$gzArchiveName, [string] $destFolder)
     
-    $inStream = [System.IO.File]::OpenRead($gzArchiveName)
-    $gzipStream = New-Object ICSharpCode.SharpZipLib.GZip.GZipInputStream -ArgumentList $inStream
-
-    $tarArchive = [ICSharpCode.SharpZipLib.Tar.TarArchive]::CreateInputTarArchive($gzipStream);
-    $tarArchive.ExtractContents($destFolder);
-    $tarArchive.Close()
-
+    $tarFileName = $gzArchiveName -replace '\.tgz$', '.tar'
+    
+    # Decompress gzip to tar
+    $gzipStream = New-Object System.IO.FileStream($gzArchiveName, [System.IO.FileMode]::Open)
+    $gzipDecompressor = New-Object System.IO.Compression.GzipStream($gzipStream, [System.IO.Compression.CompressionMode]::Decompress)
+    $tarStream = New-Object System.IO.FileStream($tarFileName, [System.IO.FileMode]::Create)
+    
+    $gzipDecompressor.CopyTo($tarStream)
+    
+    $tarStream.Close()
+    $gzipDecompressor.Close()
     $gzipStream.Close()
-    $inStream.Close()
+    
+    # Create destination folder if it doesn't exist
+    if (-not (Test-Path $destFolder)) {
+        New-Item -Path $destFolder -ItemType Directory -Force | Out-Null
+    }
+    
+    # Extract tar using external tar command if available, otherwise use workaround
+    if (Get-Command tar -ErrorAction SilentlyContinue) {
+        tar -xf $tarFileName -C $destFolder
+    } else {
+        # Fallback: rename to .zip and try to extract (works for some tar files)
+        $zipFileName = $tarFileName -replace '\.tar$', '.zip'
+        Rename-Item $tarFileName $zipFileName
+        try {
+            Expand-Archive -Path $zipFileName -DestinationPath $destFolder -Force
+        } catch {
+            Write-Warning "Could not extract using Expand-Archive. Please install tar command or extract manually."
+            throw
+        }
+    }
+    
+    # Clean up tar file
+    if (Test-Path $tarFileName) {
+        Remove-Item $tarFileName -Force
+    }
 }
 
 # Remove Old Dependency
 Remove-Item "..\src\dev\impl\DevToys.MonacoEditor\monaco-editor" -Force -Recurse -ErrorAction SilentlyContinue
 
 # Create Temp Directory and Output
-New-Item -Name $temp_dir_name -ItemType Directory | Out-Null
-New-Item -Name "..\src\dev\impl\DevToys.MonacoEditor\monaco-editor" -ItemType Directory | Out-Null
-
-Write-Host "Downloading SharpZipLib"
-[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
-Invoke-WebRequest -Uri $sharp_zip_lib_url -OutFile ".\$temp_dir_name\SharpZipLib.dll"
+New-Item -Name $temp_dir_name -ItemType Directory -Force | Out-Null
+New-Item -Name "..\src\dev\impl\DevToys.MonacoEditor\monaco-editor" -ItemType Directory -Force | Out-Null
 
 Write-Host "Downloading Monaco"
 
@@ -48,10 +71,6 @@ Write-Host "Downloading Monaco"
 Invoke-WebRequest -Uri $monaco_tgz_url -OutFile ".\$temp_dir_name\monaco.tgz"
 
 Write-Host "Extracting..."
-
-# Load Sharp Zip Lib so we can unpack Monaco
-# Load in memory so we can delete the dll after.
-[System.Reflection.Assembly]::Load([IO.File]::ReadAllBytes("$script_dir\$temp_dir_name\SharpZipLib.dll")) | Out-Null
 
 Extract-TGZ "$script_dir\$temp_dir_name\monaco.tgz" "$script_dir\$temp_dir_name\monaco"
 
