@@ -1,8 +1,5 @@
 ﻿#nullable enable
 
-using DevToys.Core.Threading;
-using Windows.UI.Xaml.Controls;
-
 namespace DevToys.Api.Tools
 {
     /// <summary>

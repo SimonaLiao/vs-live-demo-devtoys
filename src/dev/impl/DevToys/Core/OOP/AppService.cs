@@ -4,16 +4,18 @@ using System;
 using System.Collections.Concurrent;
 using System.Composition;
 using System.IO.Pipes;
-using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using DevToys.Api.Core.OOP;
 using DevToys.OutOfProcService.OutOfProcServices;
 using DevToys.Shared.Core;
 using DevToys.Shared.Core.OOP;
 using DevToys.Shared.Core.Threading;
+
 using Newtonsoft.Json;
+
 using Windows.ApplicationModel;
 using Windows.Foundation.Metadata;
 

@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 using DevToys.Shared.Core.Threading;
 using DevToys.Core.Threading;
 using DevToys.Shared.Core;
-using Windows.UI.Xaml.Controls;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace DevToys.Api.Tools
 {

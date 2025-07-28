@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
+
 using DevToys.Api.Core.Settings;
 using DevToys.Core;
 using DevToys.Core.Settings;
 using DevToys.Core.Threading;
-using DevToys.MonacoEditor.Monaco;
+
 using Microsoft.Toolkit.Mvvm.Input;
+
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -17,8 +19,8 @@ using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
+
 using Clipboard = Windows.ApplicationModel.DataTransfer.Clipboard;
 
 namespace DevToys.UI.Controls

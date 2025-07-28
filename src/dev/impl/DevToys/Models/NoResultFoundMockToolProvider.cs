@@ -2,9 +2,8 @@
 
 using System;
 using System.ComponentModel;
+
 using DevToys.Api.Tools;
-using DevToys.Core.Threading;
-using Windows.UI.Xaml.Controls;
 
 namespace DevToys.Models
 {

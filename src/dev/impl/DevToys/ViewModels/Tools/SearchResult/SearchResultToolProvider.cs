@@ -2,9 +2,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using DevToys.Api.Tools;
-using DevToys.Core.Threading;
-using Windows.UI.Xaml.Controls;
 
 namespace DevToys.ViewModels.Tools
 {
