@@ -30,6 +30,7 @@
     <Compile Include="Core\OOP\AppService.cs" />
     <Compile Include="Core\QueueWorkerViewModelBaseAsync.cs" />
     <Compile Include="Core\Threading\AsyncLazy.cs" />
+    <Compile Include="Helpers\Base64Helper.cs" />
     <Compile Include="Helpers\StorageFileHelper.cs" />
     <Compile Include="Messages\ChangeInfoBarStatusMessage.cs" />
     <Compile Include="Messages\ChangeNumberFormattingMessage.cs" />
@@ -58,6 +59,9 @@
     <Compile Include="ViewModels\Tools\AllTools\AllToolsToolProvider.cs" />
     <Compile Include="ViewModels\Tools\AllTools\AllToolsToolViewModel.cs" />
     <Compile Include="Helpers\JsonYaml\Core\DecimalJsonConverter.cs" />
+    <Compile Include="ViewModels\Tools\EncodersDecoders\Base64TextEncoderDecoder\Base64EncoderDecoderToolProvider.cs" />
+    <Compile Include="ViewModels\Tools\EncodersDecoders\Base64TextEncoderDecoder\Base64EncoderDecoderToolViewModel.cs" />
+    <Compile Include="ViewModels\Tools\EncodersDecoders\EncodersDecodersGroupToolProvider.cs" />
     <Compile Include="ViewModels\Tools\GroupToolProviderBase.cs" />
     <Compile Include="ViewModels\Tools\GroupToolViewModel.cs" />
     <Compile Include="ViewModels\Tools\Formatters\FormattersGroupToolProvider.cs" />
@@ -68,6 +72,9 @@
     </Compile>
     <Compile Include="UI\Controls\ImagePreview.xaml.cs">
       <DependentUpon>ImagePreview.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tools\EncodersDecoders\Base64EncoderDecoder\Base64EncoderDecoderToolPage.xaml.cs">
+      <DependentUpon>Base64EncoderDecoderToolPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Tools\GroupToolPage.xaml.cs">
       <DependentUpon>GroupToolPage.xaml</DependentUpon>
@@ -355,6 +362,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <PRIResource Include="Strings\en-US\Base64EncoderDecoder.resw" />
     <PRIResource Include="Strings\en-US\AllTools.resw" />
     <PRIResource Include="Strings\en-US\Common.resw" />
     <PRIResource Include="Strings\en-US\JsonFormatter.resw" />
@@ -407,6 +415,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Controls\ImagePreview.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Tools\EncodersDecoders\Base64EncoderDecoder\Base64EncoderDecoderToolPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
