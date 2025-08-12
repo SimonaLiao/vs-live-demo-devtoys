@@ -18,15 +18,8 @@ namespace DevToys.Blazor.BuiltInTools.PasswordGenerator;
     DescriptionResourceName = nameof(PasswordGenerator.Description),
     AccessibleNameResourceName = nameof(PasswordGenerator.AccessibleName),
     SearchKeywordsResourceName = nameof(PasswordGenerator.SearchKeywords))]
-[Order(0)] // First in Generator group
 internal sealed class PasswordGeneratorGuiTool : IGuiTool
 {
-    private enum GridRows
-    {
-        Configuration,
-        Output
-    }
-
     private readonly IUINumberInput _passwordLengthInput = NumberInput("password-length-input");
     private readonly IUISwitch _includeLowercaseSwitch = Switch("include-lowercase-switch");
     private readonly IUISwitch _includeUppercaseSwitch = Switch("include-uppercase-switch");
@@ -51,129 +44,100 @@ internal sealed class PasswordGeneratorGuiTool : IGuiTool
 
     public UIToolView View
         => new(
-            Grid()
-                .RowLargeSpacing()
+            Stack()
+                .Vertical()
+                .LargeSpacing()
+                .WithChildren(
+                    
+                    Label().Text(PasswordGenerator.ConfigurationSectionTitle),
+                    
+                    // Length Configuration
+                    Setting("password-length-setting")
+                        .Icon("FluentSystemIcons", '\uF4A5')
+                        .Title(PasswordGenerator.LengthTitle)
+                        .Description(PasswordGenerator.LengthDescription)
+                        .InteractiveElement(
+                            _passwordLengthInput
+                                .Value(30)
+                                .Minimum(1)
+                                .Maximum(128)
+                                .OnTextChanged(OnSettingChangedAsync)),
 
-                .Rows(
-                    (GridRows.Configuration, Auto),
-                    (GridRows.Output, new UIGridLength(1, UIGridUnitType.Fraction)))
+                    // Character Types Configuration
+                    SettingGroup("character-types-setting")
+                        .Icon("FluentSystemIcons", '\uF4B8')
+                        .Title(PasswordGenerator.CharacterTypesTitle)
+                        .Description(PasswordGenerator.CharacterTypesDescription)
+                        .WithSettings(
 
-                .Cells(
-                    Cell(
-                        GridRows.Configuration,
+                            Setting("include-lowercase-setting")
+                                .Title(PasswordGenerator.IncludeLowercaseTitle)
+                                .InteractiveElement(
+                                    _includeLowercaseSwitch
+                                        .On()
+                                        .OnToggle(OnSettingChangedAsync)),
 
-                        Stack()
-                            .Vertical()
-                            .LargeSpacing()
-                            .WithChildren(
+                            Setting("include-uppercase-setting")
+                                .Title(PasswordGenerator.IncludeUppercaseTitle)
+                                .InteractiveElement(
+                                    _includeUppercaseSwitch
+                                        .On()
+                                        .OnToggle(OnSettingChangedAsync)),
 
-                                // Configuration Section
-                                Stack()
-                                    .Vertical()
-                                    .MediumSpacing()
-                                    .WithChildren(
+                            Setting("include-digits-setting")
+                                .Title(PasswordGenerator.IncludeDigitsTitle)
+                                .InteractiveElement(
+                                    _includeDigitsSwitch
+                                        .On()
+                                        .OnToggle(OnSettingChangedAsync)),
 
-                                        Label()
-                                            .Text(PasswordGenerator.ConfigurationSectionTitle),
+                            Setting("include-special-setting")
+                                .Title(PasswordGenerator.IncludeSpecialTitle)
+                                .InteractiveElement(
+                                    _includeSpecialSwitch
+                                        .On()
+                                        .OnToggle(OnSettingChangedAsync))),
 
-                                        // Length Configuration
-                                        Setting("password-length-setting")
-                                            .Icon("FluentSystemIcons", '\uF4A5')
-                                            .Title(PasswordGenerator.LengthTitle)
-                                            .Description(PasswordGenerator.LengthDescription)
-                                            .InteractiveElement(
-                                                _passwordLengthInput
-                                                    .Value(30)
-                                                    .Minimum(1)
-                                                    .Maximum(128)
-                                                    .OnTextChanged(OnSettingChanged)),
+                    // Exclude Characters Configuration
+                    Setting("exclude-characters-setting")
+                        .Icon("FluentSystemIcons", '\uF36E')
+                        .Title(PasswordGenerator.ExcludeCharactersTitle)
+                        .Description(PasswordGenerator.ExcludeCharactersDescription)
+                        .InteractiveElement(
+                            _excludeCharactersInput
+                                .OnTextChanged(OnSettingChangedAsync)),
 
-                                        // Character Types Configuration
-                                        SettingGroup("character-types-setting")
-                                            .Icon("FluentSystemIcons", '\uF4B8')
-                                            .Title(PasswordGenerator.CharacterTypesTitle)
-                                            .Description(PasswordGenerator.CharacterTypesDescription)
-                                            .WithSettings(
+                    // Count Configuration
+                    Setting("password-count-setting")
+                        .Icon("FluentSystemIcons", '\uF4A3')
+                        .Title(PasswordGenerator.CountTitle)
+                        .Description(PasswordGenerator.CountDescription)
+                        .InteractiveElement(
+                            _passwordCountInput
+                                .Value(1)
+                                .Minimum(1)
+                                .Maximum(100)
+                                .OnTextChanged(OnSettingChangedAsync)),
 
-                                                Setting("include-lowercase-setting")
-                                                    .Title(PasswordGenerator.IncludeLowercaseTitle)
-                                                    .InteractiveElement(
-                                                        _includeLowercaseSwitch
-                                                            .On()
-                                                            .OnToggle(OnSettingChanged)),
+                    // Generate Button
+                    Stack()
+                        .Horizontal()
+                        .SmallSpacing()
+                        .WithChildren(
+                            _generateButton
+                                .Icon("FluentSystemIcons", '\uF5B2')
+                                .Text(PasswordGenerator.GenerateButtonText)
+                                .OnClick(OnGenerateButtonClickAsync),
 
-                                                Setting("include-uppercase-setting")
-                                                    .Title(PasswordGenerator.IncludeUppercaseTitle)
-                                                    .InteractiveElement(
-                                                        _includeUppercaseSwitch
-                                                            .On()
-                                                            .OnToggle(OnSettingChanged)),
-
-                                                Setting("include-digits-setting")
-                                                    .Title(PasswordGenerator.IncludeDigitsTitle)
-                                                    .InteractiveElement(
-                                                        _includeDigitsSwitch
-                                                            .On()
-                                                            .OnToggle(OnSettingChanged)),
-
-                                                Setting("include-special-setting")
-                                                    .Title(PasswordGenerator.IncludeSpecialTitle)
-                                                    .InteractiveElement(
-                                                        _includeSpecialSwitch
-                                                            .On()
-                                                            .OnToggle(OnSettingChanged))),
-
-                                        // Exclude Characters Configuration
-                                        Setting("exclude-characters-setting")
-                                            .Icon("FluentSystemIcons", '\uF36E')
-                                            .Title(PasswordGenerator.ExcludeCharactersTitle)
-                                            .Description(PasswordGenerator.ExcludeCharactersDescription)
-                                            .InteractiveElement(
-                                                _excludeCharactersInput
-                                                    .Placeholder(PasswordGenerator.ExcludeCharactersPlaceholder)
-                                                    .OnTextChanged(OnSettingChanged)),
-
-                                        // Count Configuration
-                                        Setting("password-count-setting")
-                                            .Icon("FluentSystemIcons", '\uF4A3')
-                                            .Title(PasswordGenerator.CountTitle)
-                                            .Description(PasswordGenerator.CountDescription)
-                                            .InteractiveElement(
-                                                _passwordCountInput
-                                                    .Value(1)
-                                                    .Minimum(1)
-                                                    .Maximum(100)
-                                                    .OnTextChanged(OnSettingChanged)),
-
-                                        // Generate Button
-                                        Stack()
-                                            .Horizontal()
-                                            .SmallSpacing()
-                                            .WithChildren(
-                                                _generateButton
-                                                    .Icon("FluentSystemIcons", '\uF5B2')
-                                                    .Text(PasswordGenerator.GenerateButtonText)
-                                                    .OnClick(OnGenerateButtonClickAsync),
-
-                                                _copyButton
-                                                    .Icon("FluentSystemIcons", '\uF32B')
-                                                    .Text(PasswordGenerator.CopyButtonText)
-                                                    .OnClick(OnCopyButtonClickAsync)))),
-
-                    Cell(
-                        GridRows.Output,
-
-                        Stack()
-                            .Vertical()
-                            .MediumSpacing()
-                            .WithChildren(
-
-                                Label()
-                                    .Text(PasswordGenerator.OutputSectionTitle),
-
-                                _outputTextArea
-                                    .ReadOnly()
-                                    .Placeholder(PasswordGenerator.OutputPlaceholder)))));
+                            _copyButton
+                                .Icon("FluentSystemIcons", '\uF32B')
+                                .Text(PasswordGenerator.CopyButtonText)
+                                .OnClick(OnCopyButtonClickAsync)),
+                                
+                    Label().Text(PasswordGenerator.OutputSectionTitle),
+                    
+                    _outputTextArea
+                        .ReadOnly()));
 
     public void OnDataReceived(string dataTypeName, object? parsedData)
     {
@@ -182,7 +146,25 @@ internal sealed class PasswordGeneratorGuiTool : IGuiTool
     private void OnSettingChanged()
     {
         // Auto-generate when settings change
-        OnGenerateButtonClickAsync().Forget();
+        _ = OnGenerateButtonClickAsync();
+    }
+
+    private ValueTask OnSettingChangedAsync()
+    {
+        OnSettingChanged();
+        return ValueTask.CompletedTask;
+    }
+
+    private ValueTask OnSettingChangedAsync(string value)
+    {
+        OnSettingChanged();
+        return ValueTask.CompletedTask;
+    }
+
+    private ValueTask OnSettingChangedAsync(bool value)
+    {
+        OnSettingChanged();
+        return ValueTask.CompletedTask;
     }
 
     private async ValueTask OnGenerateButtonClickAsync()
